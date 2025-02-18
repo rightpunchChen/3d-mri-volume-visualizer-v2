@@ -1,7 +1,10 @@
 # 3d-mri-volume-visualizer-v2
 
 This application provides a GUI for visualizing brain, label and prediction images for observing the model predictions using VTK and PySide6. Users can load NIFTI files, visualize them in 3D, and save a rotating view as an MP4 file.
+
 The updated version includes a slice viewer for cross-sectional analysis and a mesh viewer for 3D surface visualization.
+
+<img src="https://github.com/rightpunchChen/3d-mri-volume-visualizer-v2/blob/main/demo.png" width="65%">
 
 ## Requirements
 - Python 3.9
