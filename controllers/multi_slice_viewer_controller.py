@@ -53,13 +53,13 @@ class MultiSliceViewerController(QMainWindow):
             pred_lineEdit.returnPressed.connect(lambda checked, idx=i: self.prepare_pred(idx))
 
         self.msvw.render_btn.clicked.connect(self.render)
+        self.msvw.clear_btn.clicked.connect(self.clear_all)
 
     def open_file_data(self, idx):
         data_file_path, _ = QFileDialog.getOpenFileName(self,"Select NII files", "", "NII Files (*.nii *.nii.gz)")
         lineEdit = getattr(self.msvw, f'viewer_data{idx}_lineEdit')                
         lineEdit.setText(data_file_path)
         self.prepare_data(idx)
-        
 
     def prepare_data(self, idx):
         lineEdit = getattr(self.msvw, f'viewer_data{idx}_lineEdit')                
@@ -124,9 +124,6 @@ class MultiSliceViewerController(QMainWindow):
             image_list.append(img)
             label_list.append(self.pred_data[idx])
 
-        # self.render_thread = RenderThread(image_list, label_list, self.colors)
-        # self.render_thread.start()
-
         render_thread = QThread()
         render_worker = RenderWorker(image_list, label_list, self.colors)
 
@@ -146,3 +143,17 @@ class MultiSliceViewerController(QMainWindow):
         viewer = MultiImgSliceViewer(image_list, label_list, colors)
         viewer.show()
         self.viewers.append(viewer)
+
+    def clear_all (self):
+        for i in range(1, 5):
+            pred_btn = getattr(self.msvw, f'viewer_pred{i}_btn')
+            pred_btn.setEnabled(False)
+            data_lineEdit = getattr(self.msvw, f'viewer_data{i}_lineEdit')
+            data_lineEdit.setText("")
+            pred_lineEdit = getattr(self.msvw, f'viewer_pred{i}_lineEdit')
+            pred_lineEdit.setText("")
+
+        self.image_data = [None] * 4
+        self.pred_data = [None] * 4
+
+        self.update_render_button()
