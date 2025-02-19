@@ -15,7 +15,7 @@ class MeshViewer_Window(object):
         self.mesh_data_label = QLabel("Mesh File:", self.mv_panel)
         self.mesh_data_label.setObjectName("mesh_data_label")
         self.mesh_data_label.setGeometry(QRect(5, 40, 75, 21))
-        self.mesh_data_lineEdit = DropLineEdit(self.mv_panel)
+        self.mesh_data_lineEdit = DropLineEdit(self.mv_panel, ('.npz', '.mat'))
         self.mesh_data_lineEdit.setObjectName("mesh_data_lineEdit")
         self.mesh_data_lineEdit.setGeometry(QRect(90, 40, 200, 21))
         self.mesh_data_lineEdit.setClearButtonEnabled(False)
