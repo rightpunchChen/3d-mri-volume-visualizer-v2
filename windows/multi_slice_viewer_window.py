@@ -110,7 +110,13 @@ class MultiSliceViewer_Window(object):
 
         self.render_btn = QPushButton("Render", self.msv_panel)
         self.render_btn.setObjectName("render_btn")
-        self.render_btn.setGeometry(QRect(130, 360, 113, 32))
+        self.render_btn.setGeometry(QRect(50, 360, 113, 32))
         self.render_btn.setEnabled(False)
+
+        self.clear_btn = QPushButton("Clear all", self.msv_panel)
+        self.clear_btn.setObjectName("clear_btn")
+        self.clear_btn.setGeometry(QRect(200, 360, 113, 32))
+        self.clear_btn.setEnabled(True)
+
 
         self.msv_layout.addWidget(self.msv_panel, 0, 0, 1, 1)
