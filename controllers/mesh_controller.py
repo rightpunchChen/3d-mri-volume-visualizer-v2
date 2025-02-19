@@ -19,8 +19,8 @@ class MeshViewerController(QMainWindow):
 
     def init(self):
         self.mvw.mesh_data_btn.clicked.connect(self.open_mesh_file)
-        self.mvw.mesh_data_lineEdit.returnPressed.connect(self.open_mesh_file)
-        self.mvw.mesh_data_lineEdit.textDropped.connect(self.open_mesh_file)
+        self.mvw.mesh_data_lineEdit.returnPressed.connect(self.update_render_btn)
+        self.mvw.mesh_data_lineEdit.textDropped.connect(self.update_render_btn)
         self.mvw.render_btn.clicked.connect(self.run_meshviewer)
 
     def open_mesh_file(self):
@@ -31,6 +31,10 @@ class MeshViewerController(QMainWindow):
             "Mesh Files (*.mat *.npz)"
             )
         self.mvw.mesh_data_lineEdit.setText(data_file_path)
+        self.update_render_btn()
+
+    def update_render_btn(self):
+        data_file_path = self.mvw.mesh_data_lineEdit.text()
         file_exists = check_files(data_file_path)
         if file_exists:
             self.mvw.render_btn.setEnabled(True)
@@ -39,6 +43,7 @@ class MeshViewerController(QMainWindow):
             show_error_message(f"File does not exist: {data_file_path}")
 
         self.mvw.render_btn.setEnabled(False)
+
 
     def run_meshviewer(self):
         path = self.mvw.mesh_data_lineEdit.text()
