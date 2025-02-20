@@ -249,9 +249,9 @@ def false_negative(gt_vtk_img, pred_vtk_img):
     gt_np_img = vtk_img_to_numpy(gt_vtk_img)
     pred_np_img = vtk_img_to_numpy(pred_vtk_img)
     
-    false_positive_result = np.logical_and(gt_np_img, np.logical_not(pred_np_img)).astype(np.uint8)
-    if not np.any(false_positive_result):
+    false_negative_result = np.logical_and(gt_np_img, np.logical_not(pred_np_img)).astype(np.uint8)
+    if not np.any(false_negative_result):
         return None
     
-    vtk_result_img = numpy_to_vtk_img(false_positive_result, gt_vtk_img)
+    vtk_result_img = numpy_to_vtk_img(false_negative_result, gt_vtk_img)
     return vtk_result_img
