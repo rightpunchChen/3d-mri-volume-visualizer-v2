@@ -4,8 +4,8 @@ This application provides a GUI for visualizing brain, label and prediction imag
 
 The updated version includes a slice viewer for cross-sectional analysis and a mesh viewer for 3D surface visualization.
 
-<img src="https://github.com/rightpunchChen/3d-mri-volume-visualizer-v2/blob/main/demo.png" width="65%">
-<img src="https://github.com/rightpunchChen/3d-mri-volume-visualizer-v2/blob/main/demo_msvw.png" width="35%">
+<img src="https://github.com/rightpunchChen/3d-mri-volume-visualizer-v2/blob/main/demo.png" width="50%">
+<img src="https://github.com/rightpunchChen/3d-mri-volume-visualizer-v2/blob/main/demo_msvw.png" width="50%">
 
 ## Requirements
 - Python 3.9
