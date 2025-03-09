@@ -7,3 +7,5 @@ vtk==9.4.1
 scipy==1.13.1
 plotly==6.0.0
 SimpleITK==2.4.1
+monai==1.4.0
+nibabel==5.3.2
