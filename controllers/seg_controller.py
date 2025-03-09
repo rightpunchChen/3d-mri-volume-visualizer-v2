@@ -31,7 +31,7 @@ class SegmentationController(QMainWindow):
 
         self.init()
         self.init_actor()
-        self.init_file_name()
+        self.init_file()
 
     def init(self):
         self.segw.BF_btn.clicked.connect(self.open_brain_folder) 
@@ -52,7 +52,7 @@ class SegmentationController(QMainWindow):
         self.interactor.SetInteractorStyle(interactor_style)
         self.interactor.Initialize()
 
-    def init_file_name(self):
+    def init_file(self):
         for m in self.modalities:
             setattr(self, f'{m}_file', None)
         self.label_file = None
@@ -101,7 +101,7 @@ class SegmentationController(QMainWindow):
         self.segw.seg_pushButton.setEnabled(False)
         self.segw.model_comboBox.setEnabled(False)
         self.segw.BF_lineEdit.setText("")
-        self.init_file_name()
+        self.init_file()
 
     def render_brain(self):
         self.init_actor()
