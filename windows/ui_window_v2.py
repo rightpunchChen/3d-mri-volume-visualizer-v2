@@ -6,6 +6,7 @@ from PySide6.QtWidgets import (
 
 from windows.render_window import Render_Window
 from windows.slice_viewer_window import SliceViewer_Window
+from windows.seg_window import Segmentation_Window
 from windows.multi_slice_viewer_window import MultiSliceViewer_Window
 from windows.mesh_viewer_window import MeshViewer_Window
 from utils.configs import *
@@ -45,6 +46,9 @@ class Ui_MainWindow(object):
         self.vtk_window_tabWidget.addTab(self.rw.render_panel, "3D Render")
         self.svw = SliceViewer_Window(self.vtk_page)
         self.vtk_window_tabWidget.addTab(self.svw.sv_panel, "Slice Viewer")
+        self.vtk_window_layout.addWidget(self.vtk_window_tabWidget)
+        self.segw = Segmentation_Window(self.vtk_page)
+        self.vtk_window_tabWidget.addTab(self.segw.seg_panel, "Segmentation")
         self.vtk_window_layout.addWidget(self.vtk_window_tabWidget)
         self.render = QWidget(self.vtk_page)
         self.render.setObjectName("render")

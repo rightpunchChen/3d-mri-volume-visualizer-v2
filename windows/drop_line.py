@@ -14,9 +14,16 @@ class DropLineEdit(QLineEdit):
             event.acceptProposedAction()
 
     def dropEvent(self, event):
-        for url in event.mimeData().urls():
-            file_path = url.toLocalFile()
-            if file_path.endswith(self.file_type):
+        if self.file_type == "folder":
+            for url in event.mimeData().urls():
+                file_path = url.toLocalFile()
                 self.setText(file_path)
                 self.textDropped.emit(file_path)
                 break
+        else:
+            for url in event.mimeData().urls():
+                file_path = url.toLocalFile()
+                if file_path.endswith(self.file_type):
+                    self.setText(file_path)
+                    self.textDropped.emit(file_path)
+                    break
