@@ -1,6 +1,6 @@
 # 3d-mri-volume-visualizer-v3(add segmentation)
 
-Add tumor segmentation function (Note: this is just a test example and does not include model weights)
+Add tumor segmentation function (**Note:** this is just a test example and does not include model weights)
 
 ## Requirements
 - Python 3.9
