@@ -1,6 +1,6 @@
 # 3d-mri-volume-visualizer-v3(add segmentation)
 
-Add tumor segmentation function 
+Add tumor segmentation function (This is an improved version based on the methods presented in the [2023 TWSIAM](https://github.com/rightpunchChen/3d-mri-volume-visualizer-v2/blob/seg/poster.pdf))
 
 **Note:** this is just a test example and does not include model weights.
 
