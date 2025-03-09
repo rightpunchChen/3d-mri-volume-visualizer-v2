@@ -6,6 +6,8 @@ The updated version includes a slice viewer for cross-sectional analysis and a m
 
 <img src="https://github.com/rightpunchChen/3d-mri-volume-visualizer-v2/blob/main/demo.png" width="65%"> <img src="https://github.com/rightpunchChen/3d-mri-volume-visualizer-v2/blob/main/demo_msvw.png" width="65%">
 
+**Note:** This version does not include the segmentation function. For the segmentation version, please refer to the [seg branch](https://github.com/rightpunchChen/3d-mri-volume-visualizer-v2/tree/seg).
+
 ## Requirements
 - Python 3.9
 - Required Python Libraries:
