@@ -1,13 +1,10 @@
-# 3d-mri-volume-visualizer-v2
+# 3d-mri-volume-visualizer-v3(add segmentation)
 
-This application provides a GUI for visualizing brain, label and prediction images for observing the model predictions using VTK and PySide6. Users can load NIFTI files, visualize them in 3D, and save a rotating view as an MP4 file.
-
-The updated version includes a slice viewer for cross-sectional analysis and a mesh viewer for 3D surface visualization.
-
-<img src="https://github.com/rightpunchChen/3d-mri-volume-visualizer-v2/blob/main/demo.png" width="65%"> <img src="https://github.com/rightpunchChen/3d-mri-volume-visualizer-v2/blob/main/demo_msvw.png" width="65%">
+Add tumor segmentation function (Note: this is just a test example and does not include model weights)
 
 ## Requirements
 - Python 3.9
+- PyTorch
 - Required Python Libraries:
   - imageio==2.37.0
   - imageio-ffmpeg==0.6.0
@@ -18,6 +15,8 @@ The updated version includes a slice viewer for cross-sectional analysis and a m
   - scipy==1.13.1
   - plotly==6.0.0
   - SimpleITK==2.4.1
+  - monai==1.4.0
+  - nibabel==5.3.2
 
 Install dependencies via pip:
 ```bash
