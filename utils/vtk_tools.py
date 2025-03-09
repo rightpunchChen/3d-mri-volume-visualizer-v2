@@ -134,10 +134,17 @@ def setup_actor_sv(vtk_img, orientation):
                         0, 0, 0, 1))
 
     reslice = creat_reslice(vtk_img, matrix)
-    # mapper = create_mapper_sv(reslice)
-    # actor = create_actor_sv(mapper)
+    window = 400
+    level = 200
+    wl_mapper = vtk.vtkImageMapToWindowLevelColors()
+    wl_mapper.SetInputConnection(reslice.GetOutputPort())
+    wl_mapper.SetWindow(window)
+    wl_mapper.SetLevel(level)
+    wl_mapper.Update()
+
     actor = vtk.vtkImageActor()
-    actor.GetMapper().SetInputConnection(reslice.GetOutputPort())
+    actor.GetMapper().SetInputConnection(wl_mapper.GetOutputPort())  # **改為 Window-Level 輸出**
+    
     return reslice, actor
 
 def setup_label_actor_sv(label_image, orientation, selected_labels, colors, alpha):
