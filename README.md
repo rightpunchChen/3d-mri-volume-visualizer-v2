@@ -2,7 +2,8 @@
 
 Add tumor segmentation function 
 
-**Note:** this is just a test example and does not include model weights
+**Note:** this is just a test example and does not include model weights.
+
 To add your own model for tumor segmentation:
 
 1. Modify the `predict` function inside `utils/model/infer.py` and put the weights in `utils/model/checkpoints`.
