@@ -75,7 +75,7 @@ def predict(image, checkpoint, save_prob_dir, image_name):
 
     with torch.no_grad():
         data = data.unsqueeze(0).to(device, dtype=torch.float)
-        pred = pred = sliding_window_inference(
+        pred = sliding_window_inference(
             inputs=data,
             roi_size=(128, 128, 128),
             sw_batch_size=4,
