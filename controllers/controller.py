@@ -6,6 +6,7 @@ from controllers.render_controller import RenderController
 from controllers.slice_viewer_controller import SliceViewerController
 from controllers.multi_slice_viewer_controller import MultiSliceViewerController
 from controllers.seg_controller import SegmentationController
+from controllers.reg_controller import RegistrationController
 from controllers.mesh_controller import MeshViewerController
 from windows.colors_settings_dialog import ColorsSettingsDialog
 from windows.ui_window_v2 import Ui_MainWindow
@@ -22,6 +23,8 @@ class MainWindowController(QMainWindow):
         self.segw = self.ui.segw
         self.msvw = self.ui.msvw
         self.mv = self.ui.mv
+        self.regw = self.ui.regw
+        self.strip = self.ui.strip
         self.colors = DEFAULT_COLORS
 
         self.settings_action = self.ui.settings_menu.addAction("Color Settings")
@@ -65,6 +68,10 @@ class MainWindowController(QMainWindow):
 
         self.mvController = MeshViewerController(
             self.mv
+        )
+
+        self.regController = RegistrationController(
+            self.regw
         )
         
     def open_color_settings(self):
