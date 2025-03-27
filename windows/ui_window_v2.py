@@ -7,7 +7,7 @@ from PySide6.QtWidgets import (
 from windows.render_window import Render_Window
 from windows.slice_viewer_window import SliceViewer_Window
 from windows.seg_window import Segmentation_Window
-from windows.multi_slice_viewer_window import MultiSliceViewer_Window
+from windows.multi_slice_viewer_window import *
 from windows.mesh_viewer_window import MeshViewer_Window
 from utils.configs import *
 
@@ -55,6 +55,10 @@ class Ui_MainWindow(object):
         self.render.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.vtk_window_layout.addWidget(self.render)
         
+        self.ovw_page = QWidget()
+        self.ovw_page.setObjectName(u"ovw_page")
+        self.tabWidget.addTab(self.ovw_page, "Slice Viewer")
+        self.ovw = OmnidirectionalViewer_Window(self.ovw_page)
 
         self.msvw_page = QWidget()
         self.msvw_page.setObjectName(u"msvw_page")

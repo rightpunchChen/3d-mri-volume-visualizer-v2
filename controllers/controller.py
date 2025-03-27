@@ -4,8 +4,9 @@ from PySide6.QtWidgets import QMainWindow, QVBoxLayout
 
 from controllers.render_controller import RenderController
 from controllers.slice_viewer_controller import SliceViewerController
-from controllers.multi_slice_viewer_controller import MultiSliceViewerController
+from controllers.multi_slice_viewer_controller import *
 from controllers.seg_controller import SegmentationController
+from controllers.multi_slice_viewer_controller import *
 from controllers.mesh_controller import MeshViewerController
 from windows.colors_settings_dialog import ColorsSettingsDialog
 from windows.ui_window_v2 import Ui_MainWindow
@@ -20,6 +21,7 @@ class MainWindowController(QMainWindow):
         self.rw = self.ui.rw
         self.svw = self.ui.svw
         self.segw = self.ui.segw
+        self.ovw = self.ui.ovw
         self.msvw = self.ui.msvw
         self.mv = self.ui.mv
         self.colors = DEFAULT_COLORS
@@ -56,6 +58,11 @@ class MainWindowController(QMainWindow):
             self.segw,
             self.vtk_renderer,
             self.vtk_render_window,
+            self.colors
+            )
+        
+        self.ovController = OmnidirectionalViewerController(
+            self.ovw,
             self.colors
             )
 
