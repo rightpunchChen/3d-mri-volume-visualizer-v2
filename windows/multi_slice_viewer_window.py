@@ -120,3 +120,48 @@ class MultiSliceViewer_Window(object):
 
 
         self.msv_layout.addWidget(self.msv_panel, 0, 0, 1, 1)
+
+class OmnidirectionalViewer_Window(object):
+    def __init__(self, centralwidget):
+        self.ov_panel = QWidget(centralwidget)
+        self.ov_panel.setObjectName("ov_panel")
+        self.ov_panel.setFixedWidth(360)
+
+        self.ov_layout = QGridLayout(centralwidget)
+
+        self.viewer_data_label = QLabel("Image File:", self.ov_panel)
+        self.viewer_data_label.setObjectName("viewer_data_label")
+        self.viewer_data_label.setGeometry(QRect(20, 40, 75, 21))
+        self.viewer_data_lineEdit = DropLineEdit(self.ov_panel)
+        self.viewer_data_lineEdit.setObjectName("viewer_data_lineEdit")
+        self.viewer_data_lineEdit.setGeometry(QRect(100, 40, 200, 21))
+        self.viewer_data_lineEdit.setClearButtonEnabled(False)
+        self.viewer_data_btn = QPushButton("^", self.ov_panel)
+        self.viewer_data_btn.setObjectName("viewer_data_btn")
+        self.viewer_data_btn.setGeometry(QRect(300, 35, 48, 32))
+
+        self.viewer_pred_label = QLabel("Pred Image:", self.ov_panel)
+        self.viewer_pred_label.setObjectName("viewer_pred_label")
+        self.viewer_pred_label.setGeometry(QRect(13, 70, 80, 21))
+        self.viewer_pred_lineEdit = DropLineEdit(self.ov_panel)
+        self.viewer_pred_lineEdit.setObjectName("viewer_pred_lineEdit")
+        self.viewer_pred_lineEdit.setGeometry(QRect(100, 70, 200, 21))
+        self.viewer_pred_lineEdit.setClearButtonEnabled(False)
+        self.viewer_pred_lineEdit.setEnabled(False)
+        self.viewer_pred_btn = QPushButton("^", self.ov_panel)
+        self.viewer_pred_btn.setObjectName("viewer_pred_btn")
+        self.viewer_pred_btn.setGeometry(QRect(300, 65, 48, 32))
+        self.viewer_pred_btn.setEnabled(False)
+
+        self.render_btn = QPushButton("Render", self.ov_panel)
+        self.render_btn.setObjectName("render_btn")
+        self.render_btn.setGeometry(QRect(50, 100, 113, 32))
+        self.render_btn.setEnabled(False)
+
+        self.clear_btn = QPushButton("Clear all", self.ov_panel)
+        self.clear_btn.setObjectName("clear_btn")
+        self.clear_btn.setGeometry(QRect(200, 100, 113, 32))
+        self.clear_btn.setEnabled(True)
+
+
+        self.ov_layout.addWidget(self.ov_panel, 0, 0, 1, 1)

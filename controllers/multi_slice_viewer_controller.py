@@ -4,9 +4,9 @@ from PySide6.QtWidgets import (
     QMainWindow, QFileDialog
     )
 
-from windows.multi_slice_viewer_window import MultiSliceViewer_Window
+from windows.multi_slice_viewer_window import *
 from windows.message_box import show_error_message
-from utils.slice_viewer_util import MultiImgSliceViewer
+from utils.slice_viewer_util import MultiImgSliceViewer, OmnidirectionalSliceViewer
 from utils.vtk_tools import *
 
 class RenderWorker(QObject):
@@ -155,5 +155,121 @@ class MultiSliceViewerController(QMainWindow):
 
         self.image_data = [None] * 4
         self.pred_data = [None] * 4
+
+        self.update_render_button()
+
+
+class OmnidirectionalViewerController(QMainWindow):
+    def __init__(
+            self,
+            ovw: OmnidirectionalViewer_Window,
+            colors: dict
+            ):
+        super().__init__()
+        self.ovw = ovw
+        self.colors = colors
+        self.image_data = None
+        self.pred_data = None
+        self.threads = []
+        self.workers = []
+        self.viewers = []
+        self.init()
+
+    def init(self):
+        self.ovw.viewer_data_btn.clicked.connect(self.open_file_data)
+        self.ovw.viewer_pred_btn.clicked.connect(self.open_pred_data)
+       
+        self.ovw.viewer_data_lineEdit.textDropped.connect(self.prepare_data)
+        self.ovw.viewer_data_lineEdit.returnPressed.connect(self.prepare_data)
+        self.ovw.viewer_pred_lineEdit.textDropped.connect(self.prepare_pred)
+        self.ovw.viewer_pred_lineEdit.returnPressed.connect(self.prepare_pred)
+
+        self.ovw.render_btn.clicked.connect(self.render)
+        self.ovw.clear_btn.clicked.connect(self.clear_all)
+
+    def open_file_data(self):
+        data_file_path, _ = QFileDialog.getOpenFileName(self,"Select NII files", "", "NII Files (*.nii *.nii.gz)")            
+        self.ovw.viewer_data_lineEdit.setText(data_file_path)
+        self.prepare_data()
+
+    def prepare_data(self):             
+        data_file_path = self.ovw.viewer_data_lineEdit.text()
+        file_exists = check_files(data_file_path)
+        if file_exists:
+            self.ovw.viewer_pred_btn.setEnabled(True)
+            self.ovw.viewer_pred_lineEdit.setText("")
+            self.ovw.viewer_pred_lineEdit.setEnabled(True)
+            self.pred_data = None
+
+            img = sitk.ReadImage(data_file_path)
+            self.image_data = sitk.GetArrayFromImage(img)
+            self.update_render_button()
+            return
+        elif data_file_path and not file_exists:
+            show_error_message(f"File does not exist: {data_file_path}")
+
+        self.ovw.viewer_pred_btn.setEnabled(False)
+        self.ovw.viewer_pred_lineEdit.setEnabled(False)
+        self.ovw.viewer_pred_lineEdit.setText("")
+        self.image_data = None
+        self.pred_data = None
+        self.update_render_button()
+    
+    def open_pred_data(self):
+        data_file_path, _ = QFileDialog.getOpenFileName(self,"Select NII files", "", "NII Files (*.nii *.nii.gz)")
+        self.ovw.viewer_pred_lineEdit.setText(data_file_path)
+        self.prepare_pred()
+        
+
+    def prepare_pred(self):               
+        data_file_path = self.ovw.viewer_pred_lineEdit.text()
+        file_exists = check_files(data_file_path)
+        if file_exists:
+            img = sitk.ReadImage(data_file_path)
+            self.pred_data = sitk.GetArrayFromImage(img)
+            return
+        elif data_file_path and not file_exists:
+            show_error_message(f"File does not exist: {data_file_path}")
+        self.pred_data = None
+
+    def update_render_button(self):
+        if self.image_data is not None :
+            self.ovw.render_btn.setEnabled(True)
+        else :
+            self.ovw.render_btn.setEnabled(False)
+
+    def render(self):
+        render_thread = QThread()
+        render_worker = RenderWorker([self.image_data], [self.pred_data], self.colors)
+
+        render_worker.moveToThread(render_thread)
+        render_thread.started.connect(render_worker.process)
+        render_worker.data_ready.connect(self.create_viewer)
+        render_worker.finished.connect(render_thread.quit)
+        render_worker.finished.connect(render_worker.deleteLater)
+        render_thread.finished.connect(render_thread.deleteLater)
+
+        self.threads.append(render_thread)
+        self.workers.append(render_worker)
+
+        render_thread.start()
+
+    def create_viewer(self, data, pred, colors):
+        data = data[0]
+        if len(pred) > 0:
+            pred = pred[0]
+        else:
+            pred = None
+        viewer = OmnidirectionalSliceViewer(data, pred, colors)
+        viewer.show()
+        self.viewers.append(viewer)
+
+    def clear_all (self):
+        self.ovw.viewer_pred_btn.setEnabled(False)
+        self.ovw.viewer_data_lineEdit.setText("")
+        self.ovw.viewer_pred_lineEdit.setText("")
+
+        self.image_data = None
+        self.pred_data = None
 
         self.update_render_button()
