@@ -255,9 +255,9 @@ class OmnidirectionalViewerController(QMainWindow):
         render_thread.start()
 
     def create_viewer(self, data, pred, colors):
-        data = data[0]
-        if len(pred) > 0:
-            pred = pred[0]
+        data = np.array(data[0]).T
+        if pred[0] is not None:
+            pred = np.array(pred[0]).T
         else:
             pred = None
         viewer = OmnidirectionalSliceViewer(data, pred, colors)
