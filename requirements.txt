@@ -11,3 +11,4 @@ monai==1.4.0
 nibabel==5.3.2
 itk==5.4.0
 itk-elastix==0.20.0
+hd-bet

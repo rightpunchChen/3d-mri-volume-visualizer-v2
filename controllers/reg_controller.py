@@ -1,4 +1,3 @@
-import os
 import itk
 import SimpleITK as sitk
 from PySide6.QtWidgets import (

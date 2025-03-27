@@ -8,6 +8,7 @@ from controllers.multi_slice_viewer_controller import MultiSliceViewerController
 from controllers.seg_controller import SegmentationController
 from controllers.reg_controller import RegistrationController
 from controllers.mesh_controller import MeshViewerController
+from controllers.skullstrip_controller import SkullStripController
 from windows.colors_settings_dialog import ColorsSettingsDialog
 from windows.ui_window_v2 import Ui_MainWindow
 from utils.vtk_tools import *
@@ -72,6 +73,10 @@ class MainWindowController(QMainWindow):
 
         self.regController = RegistrationController(
             self.regw
+        )
+        
+        self.stripController = SkullStripController(
+            self.strip
         )
         
     def open_color_settings(self):
