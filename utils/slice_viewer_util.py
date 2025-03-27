@@ -579,7 +579,7 @@ class OmnidirectionalSliceViewer(QWidget):
         self.zooming = False
         self.panning = False
         self.current_scale = 1.0
-        self.fig.canvas.draw_idle()
+        self.update_views()
 
     def set_mouse_mode(self, event):
         self.mode = 'mouse'
