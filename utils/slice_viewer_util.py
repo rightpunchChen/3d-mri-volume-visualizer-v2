@@ -1,12 +1,12 @@
 import os
 import numpy as np
 import SimpleITK as sitk
-from PySide6.QtCore import Qt, QRect
-from PySide6.QtGui import QCursor, QPixmap
+from PySide6.QtCore import Qt, QRect, QSize
+from PySide6.QtGui import QCursor, QPixmap, QIcon
 from PySide6.QtWidgets import (
     QApplication, QComboBox, QLabel, QPushButton,
     QRadioButton, QSizePolicy, QSlider, QSpinBox,
-    QVBoxLayout, QWidget, QFileDialog
+    QVBoxLayout, QWidget, QFileDialog, QHBoxLayout
     )
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.animation import FuncAnimation
@@ -324,10 +324,6 @@ class OmnidirectionalSliceViewer(QWidget):
 
         # 預設模式為鼠標模式
         self.mode = 'mouse'
-        
-        self.mouse_icon = plt.imread(os.path.join('utils', 'fig', 'mouse_icon.png'))
-        self.glove_icon = plt.imread(os.path.join('utils', 'fig','glove_icon.png'))
-        self.magnifier_icon = plt.imread(os.path.join('utils', 'fig','magnifier.png'))
 
     def init_fig(self):
         # 建立 2x2 子圖，並隱藏左下角；設定背景為黑色
@@ -389,22 +385,6 @@ class OmnidirectionalSliceViewer(QWidget):
         self.voxel_text = self.fig.text(0.5, 0.95, '', ha='center', va='center', fontsize=14)
         self.update_voxel_text()
         
-        # 加入模式切換按鈕：mouse, glove, magnifier (使用 icon)
-        mouse_ax = self.fig.add_axes([0.85, 0.80, 0.05, 0.05])
-        self.mouse_button = Button(mouse_ax, '')
-        mouse_ax.imshow(self.mouse_icon, aspect='equal')
-        self.mouse_button.on_clicked(self.set_mouse_mode)
-        
-        glove_ax = self.fig.add_axes([0.85, 0.75, 0.05, 0.05])
-        self.glove_button = Button(glove_ax, '')
-        glove_ax.imshow(self.glove_icon, aspect='equal')
-        self.glove_button.on_clicked(self.set_glove_mode)
-        
-        magnifier_ax = self.fig.add_axes([0.85, 0.70, 0.05, 0.05])
-        self.magnifier_button = Button(magnifier_ax, '')
-        magnifier_ax.imshow(self.magnifier_icon, aspect='equal')
-        self.magnifier_button.on_clicked(self.set_magnifier_mode)
-        
         # 連接滑鼠事件
         self.fig.canvas.mpl_connect('button_press_event', self.on_press)
         self.fig.canvas.mpl_connect('button_release_event', self.on_release)
@@ -413,7 +393,7 @@ class OmnidirectionalSliceViewer(QWidget):
     def init_ui(self):
         self.centralwidget = QWidget()
 
-        self.main_layout = QVBoxLayout(self.centralwidget)
+        self.main_layout = QHBoxLayout(self.centralwidget)
         self.main_layout.setContentsMargins(10, 10, 10, 10)
         self.main_layout.setSpacing(10)
 
@@ -429,7 +409,7 @@ class OmnidirectionalSliceViewer(QWidget):
 
         self.panel_widget = QWidget(self.centralwidget)
         self.panel_widget.setObjectName(u"panel_widget")
-        self.panel_widget.setFixedSize(491, 120)
+        self.panel_widget.setFixedSize(200, 600)
 
         self.label_label = QLabel("Label:", self.panel_widget)
         self.label_label.setObjectName(u"label_label")
@@ -451,33 +431,54 @@ class OmnidirectionalSliceViewer(QWidget):
         self.lab_radioButton_3.setEnabled(False)
         self.lab_radioButton_4 = QRadioButton("4", self.panel_widget)
         self.lab_radioButton_4.setObjectName(u"lab_radioButton_4")
-        self.lab_radioButton_4.setGeometry(QRect(200, 10, 31, 20))
+        self.lab_radioButton_4.setGeometry(QRect(80, 30, 31, 20))
         self.lab_radioButton_4.setAutoExclusive(False)
         self.lab_radioButton_4.setEnabled(False)
         self.lab_radioButton_5 = QRadioButton("5", self.panel_widget)
         self.lab_radioButton_5.setObjectName(u"lab_radioButton_5")
-        self.lab_radioButton_5.setGeometry(QRect(240, 10, 31, 20))
+        self.lab_radioButton_5.setGeometry(QRect(120, 30, 31, 20))
         self.lab_radioButton_5.setAutoExclusive(False)
         self.lab_radioButton_5.setEnabled(False)
         self.op_label = QLabel("Opacity", self.panel_widget)
         self.op_label.setObjectName(u"op_label")
-        self.op_label.setGeometry(QRect(30, 40, 91, 21))
+        self.op_label.setGeometry(QRect(30, 80, 91, 21))
         self.op_spinBox = QSpinBox(self.panel_widget)
         self.op_spinBox.setObjectName(u"op_spinBox")
-        self.op_spinBox.setGeometry(QRect(90, 40, 51, 24))
+        self.op_spinBox.setGeometry(QRect(90, 80, 51, 24))
         self.op_spinBox.setMinimum(0)
         self.op_spinBox.setMaximum(40)
         self.op_spinBox.setValue(20)
         self.op_spinBox.setEnabled(False)
-        self.render_pushButton = QPushButton("Render", self.panel_widget)
-        self.render_pushButton.setObjectName(u"render_pushButton")
-        self.render_pushButton.setGeometry(QRect(30, 80, 113, 32))
 
-        self.main_layout.addWidget(self.canvas_widget)
+        self.mouse_ax_pushButton = QPushButton("", self.panel_widget)
+        self.mouse_ax_pushButton.setObjectName(u"mouse_ax_pushButton")
+        self.mouse_ax_pushButton.setGeometry(QRect(30, 120, 40, 40))
+        self.mouse_ax_pushButton.setIcon(QIcon(os.path.join('utils', 'fig', 'mouse_icon.png')))
+        self.mouse_ax_pushButton.setIconSize(QSize(30, 30))
+        self.glove_ax_pushButton = QPushButton("", self.panel_widget)
+        self.glove_ax_pushButton.setObjectName(u"glove_ax_pushButton")
+        self.glove_ax_pushButton.setGeometry(QRect(80, 120, 40, 40))
+        self.glove_ax_pushButton.setIcon(QIcon(os.path.join('utils', 'fig', 'glove_icon.png')))
+        self.glove_ax_pushButton.setIconSize(QSize(30, 30))
+        self.magnifier_ax_pushButton = QPushButton("", self.panel_widget)
+        self.magnifier_ax_pushButton.setObjectName(u"magnifier_ax_pushButton")
+        self.magnifier_ax_pushButton.setGeometry(QRect(130, 120, 40, 40))
+        self.magnifier_ax_pushButton.setIcon(QIcon(os.path.join('utils', 'fig', 'magnifier.png')))
+        self.magnifier_ax_pushButton.setIconSize(QSize(30, 30))
+
+        self.render_pushButton = QPushButton("Reset", self.panel_widget)
+        self.render_pushButton.setObjectName(u"render_pushButton")
+        self.render_pushButton.setGeometry(QRect(30, 180, 113, 32))
+
         self.main_layout.addWidget(self.panel_widget)
+        self.main_layout.addWidget(self.canvas_widget)
+        
         self.setLayout(self.main_layout)
         self.init_label_radioButton()
         self.render_pushButton.clicked.connect(self.reset_views)
+        self.mouse_ax_pushButton.clicked.connect(self.set_mouse_mode)
+        self.glove_ax_pushButton.clicked.connect(self.set_glove_mode)
+        self.magnifier_ax_pushButton.clicked.connect(self.set_magnifier_mode)
 
     def init_label_radioButton(self):
         if self.label is None:

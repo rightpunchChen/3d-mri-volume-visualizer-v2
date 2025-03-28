@@ -92,4 +92,5 @@ class MainWindowController(QMainWindow):
         self.svwController.update_pred_button()
 
         self.msvwController.colors = self.colors
+        self.ovController.colors = self.colors
         self.vtk_render_window.Render()
