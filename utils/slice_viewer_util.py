@@ -269,11 +269,11 @@ class MultiImgSliceViewer(QWidget):
                 self.savePNG_pushButton.setEnabled(True)
 
 class OmnidirectionalSliceViewer(QWidget):
-    def __init__(self, data, label, colors):
+    def __init__(self, data, pred, colors):
         super().__init__()
         self.data, self.orig_shape = self.pad_to_cube(data)
-        if label is not None:
-            self.label, _ = self.pad_to_cube(label)
+        if pred is not None:
+            self.label, _ = self.pad_to_cube(pred)
         else:
             self.label = None
         self.labeled_image = np.stack([self.normalize(self.data)] * 3, axis=-1)
@@ -349,7 +349,7 @@ class OmnidirectionalSliceViewer(QWidget):
         # ----------------------------
         # Axial 視圖
         # ----------------------------
-        self.axial_im = self.axial_ax.imshow(self.labeled_image[:, :, self.z_idx],
+        self.axial_im = self.axial_ax.imshow(np.transpose(self.labeled_image[:, :, self.z_idx], (1, 0, 2)),
                                              cmap='gray', origin='lower')
         self.axial_ax.set_title(f'Axial (z={self.z_idx - self.offset_z + 1})')
         self.axial_vline = self.axial_ax.axvline(x=self.x_idx, color='r', linestyle='--')
@@ -358,7 +358,7 @@ class OmnidirectionalSliceViewer(QWidget):
         # ----------------------------
         # Sagittal 視圖
         # ----------------------------
-        self.sagittal_im = self.sagittal_ax.imshow(self.labeled_image[self.x_idx, :, :],
+        self.sagittal_im = self.sagittal_ax.imshow(np.transpose(self.labeled_image[self.x_idx, :, :], (1, 0, 2)),
                                                     cmap='gray', origin='lower')
         self.sagittal_ax.set_title(f'Sagittal (x={self.x_idx - self.offset_x + 1})')
         self.sagittal_vline = self.sagittal_ax.axvline(x=self.y_idx, color='r', linestyle='--')
@@ -367,7 +367,7 @@ class OmnidirectionalSliceViewer(QWidget):
         # ----------------------------
         # Coronal 視圖
         # ----------------------------
-        self.coronal_im = self.coronal_ax.imshow(self.labeled_image[:, self.y_idx, :],
+        self.coronal_im = self.coronal_ax.imshow(np.transpose(self.labeled_image[:, self.y_idx, :], (1, 0, 2)),
                                                   cmap='gray', origin='lower')
         self.coronal_ax.set_title(f'Coronal (y={self.y_idx - self.offset_y + 1})')
         self.coronal_vline = self.coronal_ax.axvline(x=self.x_idx, color='r', linestyle='--')
@@ -517,17 +517,17 @@ class OmnidirectionalSliceViewer(QWidget):
         self.voxel_text.set_text(f'Voxel Value: {voxel_value:.2f}')
     
     def update_views(self):
-        self.axial_im.set_data(self.labeled_image[:, :, self.z_idx])
+        self.axial_im.set_data(np.transpose(self.labeled_image[:, :, self.z_idx], (1, 0, 2)))
         self.axial_ax.set_title(f'Axial (z={self.z_idx - self.offset_z + 1})')
         self.axial_vline.set_xdata([self.x_idx, self.x_idx])
         self.axial_hline.set_ydata([self.y_idx, self.y_idx])
         
-        self.sagittal_im.set_data(self.labeled_image[self.x_idx, :, :])
+        self.sagittal_im.set_data(np.transpose(self.labeled_image[self.x_idx, :, :], (1, 0, 2)))
         self.sagittal_ax.set_title(f'Sagittal (x={self.x_idx - self.offset_x + 1})')
         self.sagittal_vline.set_xdata([self.y_idx, self.y_idx])
         self.sagittal_hline.set_ydata([self.z_idx, self.z_idx])
         
-        self.coronal_im.set_data(self.labeled_image[:, self.y_idx, :])
+        self.coronal_im.set_data(np.transpose(self.labeled_image[:, self.y_idx, :], (1, 0, 2)))
         self.coronal_ax.set_title(f'Coronal (y={self.y_idx - self.offset_y + 1})')
         self.coronal_vline.set_xdata([self.x_idx, self.x_idx])
         self.coronal_hline.set_ydata([self.z_idx, self.z_idx])
@@ -580,7 +580,7 @@ class OmnidirectionalSliceViewer(QWidget):
         self.zooming = False
         self.panning = False
         self.current_scale = 1.0
-        self.fig.canvas.draw_idle()
+        self.update_views()
 
     def set_mouse_mode(self, event):
         self.mode = 'mouse'
