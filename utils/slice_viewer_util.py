@@ -594,7 +594,7 @@ class OmnidirectionalSliceViewer(QWidget):
     
     def set_magnifier_mode(self, event):
         self.mode = 'magnifier'
-        self.magnifier_pixmap = QPixmap('magnifier_icon.png').scaled(64, 64, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        self.magnifier_pixmap = QPixmap(os.path.join('utils', 'fig', 'magnifier.png')).scaled(30, 30, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         self.fig.canvas.setCursor(QCursor(self.magnifier_pixmap))
         # print("切換到放大鏡模式")
     
