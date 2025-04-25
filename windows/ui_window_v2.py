@@ -9,6 +9,8 @@ from windows.slice_viewer_window import SliceViewer_Window
 from windows.seg_window import Segmentation_Window
 from windows.multi_slice_viewer_window import *
 from windows.mesh_viewer_window import MeshViewer_Window
+from windows.reg_window import Registration_Window
+from windows.skull_strip_window import SkullStrip_Window
 from utils.configs import *
 
 class Ui_MainWindow(object):
@@ -71,6 +73,15 @@ class Ui_MainWindow(object):
         self.tabWidget.addTab(self.mv_page, "Mesh Viewer")
         self.mv = MeshViewer_Window(self.mv_page)
 
+        self.reg_page = QWidget()
+        self.reg_page.setObjectName(u"reg_page")
+        self.tabWidget.addTab(self.reg_page, "Registration")
+        self.regw = Registration_Window(self.reg_page)
+
+        self.strip_page = QWidget()
+        self.strip_page.setObjectName(u"strip_page")
+        self.tabWidget.addTab(self.strip_page, "Skull Strip")
+        self.strip = SkullStrip_Window(self.strip_page)
 
         self.gridLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
