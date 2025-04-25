@@ -49,6 +49,8 @@ class SkullStripController(QMainWindow):
                 self.strip.skullstrip_btn.setEnabled(False)
                 input_path = self.strip.input_image_lineEdit.text()
                 output_path = save_path
+                from HD_BET.paths import folder_with_parameter_files
+                os.makedirs(folder_with_parameter_files, exist_ok=True)
                 if torch.cuda.is_available():
                     cmd = f"hd-bet -i {input_path} -o {output_path} -device 0"
                     subprocess.run(cmd, shell=True)
