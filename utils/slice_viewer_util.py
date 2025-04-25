@@ -1,12 +1,12 @@
 import os
 import numpy as np
 import SimpleITK as sitk
-from PySide6.QtCore import Qt, QRect
-from PySide6.QtGui import QCursor, QPixmap
+from PySide6.QtCore import Qt, QRect, QSize
+from PySide6.QtGui import QCursor, QPixmap, QIcon
 from PySide6.QtWidgets import (
     QApplication, QComboBox, QLabel, QPushButton,
     QRadioButton, QSizePolicy, QSlider, QSpinBox,
-    QVBoxLayout, QWidget, QFileDialog,QHBoxLayout
+    QVBoxLayout, QWidget, QFileDialog, QHBoxLayout
     )
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.animation import FuncAnimation
@@ -324,15 +324,10 @@ class OmnidirectionalSliceViewer(QWidget):
 
         # 預設模式為鼠標模式
         self.mode = 'mouse'
-        
-        self.mouse_icon = plt.imread(os.path.join('utils', 'fig', 'mouse_icon.png'))
-        self.glove_icon = plt.imread(os.path.join('utils', 'fig','glove_icon.png'))
-        self.magnifier_icon = plt.imread(os.path.join('utils', 'fig','magnifier.png'))
 
     def init_fig(self):
         # 建立 2x2 子圖，並隱藏左下角；設定背景為黑色
         self.fig, self.axes = plt.subplots(2, 2, figsize=(15, 10))
-        self.fig.subplots_adjust(bottom=0)
         self.axial_ax    = self.axes[0, 0]  # 左上：Axial
         self.sagittal_ax = self.axes[0, 1]  # 右上：Sagittal
         self.coronal_ax  = self.axes[1, 1]  # 右下：Coronal
@@ -390,133 +385,100 @@ class OmnidirectionalSliceViewer(QWidget):
         self.voxel_text = self.fig.text(0.5, 0.95, '', ha='center', va='center', fontsize=14)
         self.update_voxel_text()
         
-        # 加入模式切換按鈕：mouse, glove, magnifier (使用 icon)
-        mouse_ax = self.fig.add_axes([0.85, 0.80, 0.05, 0.05])
-        self.mouse_button = Button(mouse_ax, '')
-        mouse_ax.imshow(self.mouse_icon, aspect='equal')
-        self.mouse_button.on_clicked(self.set_mouse_mode)
-        
-        glove_ax = self.fig.add_axes([0.85, 0.75, 0.05, 0.05])
-        self.glove_button = Button(glove_ax, '')
-        glove_ax.imshow(self.glove_icon, aspect='equal')
-        self.glove_button.on_clicked(self.set_glove_mode)
-        
-        magnifier_ax = self.fig.add_axes([0.85, 0.70, 0.05, 0.05])
-        self.magnifier_button = Button(magnifier_ax, '')
-        magnifier_ax.imshow(self.magnifier_icon, aspect='equal')
-        self.magnifier_button.on_clicked(self.set_magnifier_mode)
-        
         # 連接滑鼠事件
         self.fig.canvas.mpl_connect('button_press_event', self.on_press)
         self.fig.canvas.mpl_connect('button_release_event', self.on_release)
         self.fig.canvas.mpl_connect('motion_notify_event', self.on_motion)
 
     def init_ui(self):
-        # 建立 central widget 與主水平佈局 (左側 panel、右側 canvas)
         self.centralwidget = QWidget()
-        self.main_layout = QHBoxLayout(self.centralwidget)
-        self.main_layout.setContentsMargins(5, 5, 5, 5)
-        self.main_layout.setSpacing(5)
 
-        # ---------------------------
-        # 右側：Canvas 區域 (顯示 matplotlib 圖形)
-        # ---------------------------
+        self.main_layout = QHBoxLayout(self.centralwidget)
+        self.main_layout.setContentsMargins(10, 10, 10, 10)
+        self.main_layout.setSpacing(10)
+
         self.canvas = FigureCanvas(self.fig)
+
         self.canvas_widget = QWidget(self.centralwidget)
-        self.canvas_widget.setObjectName("canvas_widget")
+        self.canvas_widget.setObjectName(u"canvas_widget")
+        # self.canvas_widget.setMinimumSize(1200, 800)
         self.canvas_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.canvas_layout = QVBoxLayout(self.canvas_widget)
-        self.canvas_layout.setContentsMargins(0, 0, 0, 0)
-        self.canvas_layout.setSpacing(0)
-        self.canvas_layout.addWidget(self.canvas)
+        self.canvas_layout.setContentsMargins(0,0,0,0)
+        self.canvas_layout.addWidget(self.canvas) 
 
-        # ---------------------------
-        # 左側：控制面板 (Label、Opacity 與 Render 按鈕)
-        # ---------------------------
         self.panel_widget = QWidget(self.centralwidget)
-        self.panel_widget.setObjectName("panel_widget")
-        self.panel_widget.setFixedWidth(150)  # 固定寬度
+        self.panel_widget.setObjectName(u"panel_widget")
+        self.panel_widget.setFixedSize(200, 600)
 
-        # 取得螢幕可用高度，並設定左側面板高度為 1/3 (你可以根據需求調整比例)
-        screen_height = QApplication.primaryScreen().availableGeometry().height()
-        self.panel_widget.setFixedHeight(screen_height // 4)
-
-        self.panel_layout = QVBoxLayout(self.panel_widget)
-        self.panel_layout.setContentsMargins(5, 5, 5, 5)
-        self.panel_layout.setSpacing(5)
-        # 設定 panel_layout 的對齊方式為靠上，讓元件由上往下排列
-        self.panel_layout.setAlignment(Qt.AlignTop)
-
-        # 1) 上方顯示標題 "Label:"
         self.label_label = QLabel("Label:", self.panel_widget)
-        self.label_label.setObjectName("label_label")
-        self.panel_layout.addWidget(self.label_label, alignment=Qt.AlignCenter)
-
-        # 2) 建立一條水平佈局，放置 5 組 (數字 QLabel + QRadioButton)
-        self.radio_buttons_layout = QHBoxLayout()
-        for i in range(1, 6):
-            # 每組使用一個垂直佈局
-            vlayout = QVBoxLayout()
-            vlayout.setContentsMargins(0, 0, 0, 0)
-            vlayout.setSpacing(2)
-            
-            # 上方：顯示數字的 QLabel
-            lab_label = QLabel(str(i))
-            lab_label.setAlignment(Qt.AlignCenter)
-            setattr(self, f'lab_label_{i}', lab_label)
-            
-            # 下方：空文字的 QRadioButton (只顯示圓圈)
-            radio_button = QRadioButton("")
-            radio_button.setObjectName(f"lab_radioButton_{i}")
-            radio_button.setAutoExclusive(False)
-            radio_button.setEnabled(False)
-            
-            # 加入垂直佈局，並置中對齊
-            vlayout.addWidget(lab_label, 0, Qt.AlignCenter)
-            vlayout.addWidget(radio_button, 0, Qt.AlignCenter)
-            
-            # 存入屬性，方便後續操作
-            setattr(self, f'lab_radioButton_{i}', radio_button)
-            
-            # 將這組垂直佈局加到水平方向的 radio_buttons_layout
-            self.radio_buttons_layout.addLayout(vlayout)
-        self.panel_layout.addLayout(self.radio_buttons_layout)
-
-        # 3) Opacity 標籤與 SpinBox
+        self.label_label.setObjectName(u"label_label")
+        self.label_label.setGeometry(QRect(30, 10, 41, 21))
+        self.lab_radioButton_1 = QRadioButton("1", self.panel_widget)
+        self.lab_radioButton_1.setObjectName(u"lab_radioButton_1")
+        self.lab_radioButton_1.setGeometry(QRect(80, 10, 31, 20))
+        self.lab_radioButton_1.setAutoExclusive(False)
+        self.lab_radioButton_1.setEnabled(False)
+        self.lab_radioButton_2 = QRadioButton("2", self.panel_widget)
+        self.lab_radioButton_2.setObjectName(u"lab_radioButton_2")
+        self.lab_radioButton_2.setGeometry(QRect(120, 10, 31, 20))
+        self.lab_radioButton_2.setAutoExclusive(False)
+        self.lab_radioButton_2.setEnabled(False)
+        self.lab_radioButton_3 = QRadioButton("3", self.panel_widget)
+        self.lab_radioButton_3.setObjectName(u"lab_radioButton_3")
+        self.lab_radioButton_3.setGeometry(QRect(160, 10, 31, 20))
+        self.lab_radioButton_3.setAutoExclusive(False)
+        self.lab_radioButton_3.setEnabled(False)
+        self.lab_radioButton_4 = QRadioButton("4", self.panel_widget)
+        self.lab_radioButton_4.setObjectName(u"lab_radioButton_4")
+        self.lab_radioButton_4.setGeometry(QRect(80, 30, 31, 20))
+        self.lab_radioButton_4.setAutoExclusive(False)
+        self.lab_radioButton_4.setEnabled(False)
+        self.lab_radioButton_5 = QRadioButton("5", self.panel_widget)
+        self.lab_radioButton_5.setObjectName(u"lab_radioButton_5")
+        self.lab_radioButton_5.setGeometry(QRect(120, 30, 31, 20))
+        self.lab_radioButton_5.setAutoExclusive(False)
+        self.lab_radioButton_5.setEnabled(False)
         self.op_label = QLabel("Opacity", self.panel_widget)
-        self.op_label.setObjectName("op_label")
-        self.panel_layout.addWidget(self.op_label, alignment=Qt.AlignCenter)
-        
+        self.op_label.setObjectName(u"op_label")
+        self.op_label.setGeometry(QRect(30, 80, 91, 21))
         self.op_spinBox = QSpinBox(self.panel_widget)
-        self.op_spinBox.setObjectName("op_spinBox")
+        self.op_spinBox.setObjectName(u"op_spinBox")
+        self.op_spinBox.setGeometry(QRect(90, 80, 51, 24))
         self.op_spinBox.setMinimum(0)
         self.op_spinBox.setMaximum(40)
         self.op_spinBox.setValue(20)
         self.op_spinBox.setEnabled(False)
-        self.panel_layout.addWidget(self.op_spinBox, alignment=Qt.AlignCenter)
 
-        # 4) Render 按鈕
-        self.render_pushButton = QPushButton("Render", self.panel_widget)
-        self.render_pushButton.setObjectName("render_pushButton")
-        self.panel_layout.addWidget(self.render_pushButton, alignment=Qt.AlignCenter)
+        self.mouse_ax_pushButton = QPushButton("", self.panel_widget)
+        self.mouse_ax_pushButton.setObjectName(u"mouse_ax_pushButton")
+        self.mouse_ax_pushButton.setGeometry(QRect(30, 120, 40, 40))
+        self.mouse_ax_pushButton.setIcon(QIcon(os.path.join('utils', 'fig', 'mouse_icon.png')))
+        self.mouse_ax_pushButton.setIconSize(QSize(30, 30))
+        self.glove_ax_pushButton = QPushButton("", self.panel_widget)
+        self.glove_ax_pushButton.setObjectName(u"glove_ax_pushButton")
+        self.glove_ax_pushButton.setGeometry(QRect(80, 120, 40, 40))
+        self.glove_ax_pushButton.setIcon(QIcon(os.path.join('utils', 'fig', 'glove_icon.png')))
+        self.glove_ax_pushButton.setIconSize(QSize(30, 30))
+        self.magnifier_ax_pushButton = QPushButton("", self.panel_widget)
+        self.magnifier_ax_pushButton.setObjectName(u"magnifier_ax_pushButton")
+        self.magnifier_ax_pushButton.setGeometry(QRect(130, 120, 40, 40))
+        self.magnifier_ax_pushButton.setIcon(QIcon(os.path.join('utils', 'fig', 'magnifier.png')))
+        self.magnifier_ax_pushButton.setIconSize(QSize(30, 30))
 
-        # ---------------------------
-        # 加入主佈局：左側 Panel 與右側 Canvas
-        # ---------------------------
-        # 使左側 panel 垂直置頂
-        self.main_layout.addWidget(self.panel_widget, 0, Qt.AlignTop)
-        self.main_layout.addWidget(self.canvas_widget, 1)
+        self.render_pushButton = QPushButton("Reset", self.panel_widget)
+        self.render_pushButton.setObjectName(u"render_pushButton")
+        self.render_pushButton.setGeometry(QRect(30, 180, 113, 32))
 
+        self.main_layout.addWidget(self.panel_widget)
+        self.main_layout.addWidget(self.canvas_widget)
+        
         self.setLayout(self.main_layout)
-
-        # 初始化 label 狀態 (例如設定文字顏色、啟用按鈕等)
         self.init_label_radioButton()
-
-        # 連結 Render 按鈕的點擊事件 (reset_views)
         self.render_pushButton.clicked.connect(self.reset_views)
-
-
-
+        self.mouse_ax_pushButton.clicked.connect(self.set_mouse_mode)
+        self.glove_ax_pushButton.clicked.connect(self.set_glove_mode)
+        self.magnifier_ax_pushButton.clicked.connect(self.set_magnifier_mode)
 
     def init_label_radioButton(self):
         if self.label is None:
@@ -619,7 +581,6 @@ class OmnidirectionalSliceViewer(QWidget):
         self.panning = False
         self.current_scale = 1.0
         self.update_views()
-        # self.fig.canvas.draw_idle()
 
     def set_mouse_mode(self, event):
         self.mode = 'mouse'
@@ -633,7 +594,7 @@ class OmnidirectionalSliceViewer(QWidget):
     
     def set_magnifier_mode(self, event):
         self.mode = 'magnifier'
-        self.magnifier_pixmap = QPixmap('magnifier_icon.png').scaled(64, 64, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        self.magnifier_pixmap = QPixmap(os.path.join('utils', 'fig', 'magnifier.png')).scaled(30, 30, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         self.fig.canvas.setCursor(QCursor(self.magnifier_pixmap))
         # print("切換到放大鏡模式")
     

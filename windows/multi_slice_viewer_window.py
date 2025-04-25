@@ -125,7 +125,7 @@ class OmnidirectionalViewer_Window(object):
     def __init__(self, centralwidget):
         self.ov_panel = QWidget(centralwidget)
         self.ov_panel.setObjectName("ov_panel")
-        self.ov_panel.setFixedWidth(360)
+        self.ov_panel.setFixedSize(360, 150)
 
         self.ov_layout = QGridLayout(centralwidget)
 
